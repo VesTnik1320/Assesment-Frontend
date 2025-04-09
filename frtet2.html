@@ -37,26 +37,17 @@
             }
 
         .panel-content {
-            display: none;
+            max-height: 0;
+            overflow: hidden;
             margin-top: 10px;
-            animation: fadeIn 0.5s ease-out;
+            opacity: 0;
+            transition: max-height 0.3s ease, opacity 0.3s ease;
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
+            .panel-content.active {
+                max-height: 5000px;
                 opacity: 1;
-                transform: translateY(0);
             }
-        }
-
-        .panel-content.active {
-            display: block;
-        }
 
         .arrow {
             font-size: 16px;
@@ -218,10 +209,16 @@
             border-radius: 8px;
             transition: all 0.2s;
             background: rgba(245, 247, 250, 0.5);
+            cursor: pointer;
         }
 
             .data-item:hover {
                 background: rgba(225, 229, 235, 0.7);
+            }
+
+            .data-item.active {
+                background: rgba(225, 229, 235, 0.9);
+                box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.3);
             }
 
         .data-label {
@@ -235,6 +232,155 @@
             font-size: 15px;
             min-width: 50px;
             text-align: right;
+        }
+
+        /* Стили для гистограмм */
+        .histogram-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .histogram {
+            position: relative;
+            width: calc(45% - 100px);
+            background: white;
+            border-radius: 12px;
+            padding: 20px 40px 40px 60px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+
+        .histogram-axes {
+            position: relative;
+            height: 200px;
+        }
+
+        .y-axis {
+            position: absolute;
+            left: -40px;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            border-right: 1px solid #ccc;
+        }
+
+        .x-axis {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -30px;
+            height: 30px;
+            border-top: 1px solid #ccc;
+        }
+
+        .y-tick {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            text-align: right;
+            padding-right: 5px;
+            font-size: 12px;
+            color: #666;
+            transform: translateY(50%);
+        }
+
+            .y-tick::after {
+                content: '';
+                position: absolute;
+                right: -5px;
+                top: 50%;
+                width: 5px;
+                height: 1px;
+                background: #ccc;
+            }
+
+        .y-gridline {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+            z-index: 0;
+        }
+
+        .x-tick {
+            position: absolute;
+            top: 5px;
+            width: 30%;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .bars-container {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 100%;
+            position: relative;
+            z-index: 1;
+        }
+
+        .bar-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 30%;
+            position: relative;
+        }
+
+        .bar {
+            width: 60%;
+            background: #4CAF50;
+            border-radius: 5px 5px 0 0;
+            transition: height 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            will-change: height;
+        }
+
+        .value-indicator {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            width: 1px;
+            height: 20px;
+            background: rgba(0,0,0,0.2);
+            transform: translateX(-50%);
+            display: none;
+        }
+
+        .bar:hover .value-indicator {
+            display: block;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -45px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.9);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .bar:hover .bar-value {
+            display: block;
+        }
+
+        .bar-label {
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .histogram-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
         }
 
         /* Адаптация для мобильных устройств */
@@ -251,6 +397,11 @@
                 width: 180px;
                 height: 180px;
             }
+
+            .histogram {
+                width: 100%;
+                padding: 20px 30px 40px 50px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -262,68 +413,15 @@
             .stat-section {
                 padding: 18px;
             }
-        }
 
-        /* Стили для гистограмм */
-        .histogram-container {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 40px;
-        }
-
-        .histogram {
-            width: 45%;
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        }
-
-        .histogram-title {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #2c3e50;
-        }
-
-        .bars-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            height: 200px;
-            padding-top: 20px;
-        }
-
-        .bar-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 30%;
-        }
-
-        .bar {
-            width: 60%;
-            background: #4CAF50;
-            border-radius: 5px 5px 0 0;
-            transition: height 0.5s ease, background-color 0.3s;
-            position: relative;
-        }
-
-        .bar-label {
-            margin-top: 10px;
-            font-size: 14px;
-        }
-
-        .bar-value {
-            position: absolute;
-            top: -25px;
-            width: 100%;
-            text-align: center;
-            font-weight: bold;
+            .histogram {
+                padding: 20px 20px 40px 40px;
+            }
         }
     </style>
 </head>
 <body>
-    <button class="panel-header" onclick="togglePanel('assessmentPanel', this)">
+    <button class="panel-header" onclick="togglePanel('assessmentPanel', this)" aria-expanded="false">
         <span>Уровень компетенций на этапах ассессмента</span>
         <span class="arrow">▼</span>
     </button>
@@ -369,7 +467,7 @@
             <div class="stat-section" id="completion-section">
                 <h3>Статистика завершения обучения</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="completion-chart"></div>
+                    <div class="donut-chart" id="completion-chart" aria-label="Круговая диаграмма статистики завершения обучения"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0%</div>
@@ -395,7 +493,7 @@
             <div class="stat-section" id="direction-section">
                 <h3>Количество слушателей по направлениям</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="direction-chart"></div>
+                    <div class="donut-chart" id="direction-chart" aria-label="Круговая диаграмма количества слушателей по направлениям"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0</div>
@@ -419,7 +517,7 @@
                         <span class="data-value">163</span>
                     </div>
                     <div class="data-item" data-value="39" data-color="#FF5722">
-                        <span class="data-label">Цифровые технологии управления "Умным домом"</span>
+                        <span class="data-label">Цифровые технологии управления "Умным городом"</span>
                         <span class="data-value">39</span>
                     </div>
                     <div class="data-item" data-value="77" data-color="#607D8B">
@@ -433,7 +531,7 @@
             <div class="stat-section" id="participants-section">
                 <h3>Количество участников на 1 этапе</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="participants-chart"></div>
+                    <div class="donut-chart" id="participants-chart" aria-label="Круговая диаграмма количества участников на 1 этапе"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0</div>
@@ -457,7 +555,7 @@
                         <span class="data-value">163</span>
                     </div>
                     <div class="data-item" data-value="39" data-color="#FF5722">
-                        <span class="data-label">Цифровые технологии управления "Умным домом"</span>
+                        <span class="data-label">Цифровые технологии управления "Умным городом"</span>
                         <span class="data-value">39</span>
                     </div>
                     <div class="data-item" data-value="77" data-color="#607D8B">
@@ -471,7 +569,7 @@
             <div class="stat-section" id="competence-section">
                 <h3>Уровень сформированности компетенций на 1 этапе</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="competence-chart"></div>
+                    <div class="donut-chart" id="competence-chart" aria-label="Круговая диаграмма уровня сформированности компетенций"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0%</div>
@@ -501,7 +599,7 @@
             <div class="stat-section" id="final-section">
                 <h3>Итоговый уровень развития компетенций на 1 этапе</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="final-chart"></div>
+                    <div class="donut-chart" id="final-chart" aria-label="Круговая диаграмма итогового уровня развития компетенций"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0%</div>
@@ -525,7 +623,7 @@
         </div>
     </div>
     <!-- Новая панель для средних значений -->
-    <button class="panel-header" onclick="togglePanel('averagePanel', this)">
+    <button class="panel-header" onclick="togglePanel('averagePanel', this)" aria-expanded="false">
         <span>Средние значения</span>
         <span class="arrow">▼</span>
     </button>
@@ -534,25 +632,32 @@
         <div class="histogram-container">
             <!-- Гистограмма времени -->
             <div class="histogram">
-                <h3 class="histogram-title">Среднее время по каждому этапу</h3>
-                <div class="bars-container" id="time-histogram">
-                    <div class="bar-wrapper">
-                        <div class="bar" data-value="20" style="height: 0; background-color: #4CAF50;">
-                            <div class="bar-value">20</div>
+                <h3 class="histogram-title">Среднее время по каждому этапу (минуты)</h3>
+                <div class="histogram-axes">
+                    <div class="y-axis" id="y-axis-time"></div>
+                    <div class="x-axis" id="x-axis-time"></div>
+                    <div class="bars-container" id="time-histogram">
+                        <div class="bar-wrapper">
+                            <div class="bar" data-value="20" style="height: 0; background-color: #4CAF50;">
+                                <div class="value-indicator"></div>
+                                <div class="bar-value">20</div>
+                            </div>
+                            <div class="bar-label">1 этап</div>
                         </div>
-                        <div class="bar-label">1 этап</div>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" data-value="30" style="height: 0; background-color: #2196F3;">
-                            <div class="bar-value">30</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" data-value="30" style="height: 0; background-color: #2196F3;">
+                                <div class="value-indicator"></div>
+                                <div class="bar-value">30</div>
+                            </div>
+                            <div class="bar-label">2 этап</div>
                         </div>
-                        <div class="bar-label">2 этап</div>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" data-value="25" style="height: 0; background-color: #FFC107;">
-                            <div class="bar-value">25</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" data-value="25" style="height: 0; background-color: #FFC107;">
+                                <div class="value-indicator"></div>
+                                <div class="bar-value">25</div>
+                            </div>
+                            <div class="bar-label">3 этап</div>
                         </div>
-                        <div class="bar-label">3 этап</div>
                     </div>
                 </div>
             </div>
@@ -560,37 +665,37 @@
             <!-- Гистограмма попыток -->
             <div class="histogram">
                 <h3 class="histogram-title">Среднее количество попыток</h3>
-                <div class="bars-container" id="attempts-histogram">
-                    <div class="bar-wrapper">
-                        <div class="bar" data-value="1" style="height: 0; background-color: #9C27B0;">
-                            <div class="bar-value">1</div>
+                <div class="histogram-axes">
+                    <div class="y-axis" id="y-axis-attempts"></div>
+                    <div class="x-axis" id="x-axis-attempts"></div>
+                    <div class="bars-container" id="attempts-histogram">
+                        <div class="bar-wrapper">
+                            <div class="bar" data-value="1" style="height: 0; background-color: #9C27B0;">
+                                <div class="value-indicator"></div>
+                                <div class="bar-value">1.0</div>
+                            </div>
+                            <div class="bar-label">1 этап</div>
                         </div>
-                        <div class="bar-label">1 этап</div>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" data-value="1.2" style="height: 0; background-color: #FF5722;">
-                            <div class="bar-value">1.2</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" data-value="1.2" style="height: 0; background-color: #FF5722;">
+                                <div class="value-indicator"></div>
+                                <div class="bar-value">1.2</div>
+                            </div>
+                            <div class="bar-label">2 этап</div>
                         </div>
-                        <div class="bar-label">2 этап</div>
-                    </div>
-                    <div class="bar-wrapper">
-                        <div class="bar" data-value="1" style="height: 0; background-color: #607D8B;">
-                            <div class="bar-value">1</div>
+                        <div class="bar-wrapper">
+                            <div class="bar" data-value="1" style="height: 0; background-color: #607D8B;">
+                                <div class="value-indicator"></div>
+                                <div class="bar-value">1.0</div>
+                            </div>
+                            <div class="bar-label">3 этап</div>
                         </div>
-                        <div class="bar-label">3 этап</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        function togglePanel() {
-            const panel = document.getElementById('assessmentPanel');
-            const arrow = document.querySelector('.arrow');
-            panel.classList.toggle('active');
-            arrow.classList.toggle('active');
-        }
-
         // Цвета для диаграмм
         const chartColors = [
             '#4CAF50', '#2196F3', '#FFC107', '#9C27B0',
@@ -598,19 +703,87 @@
             '#E91E63', '#3F51B5', '#009688', '#795548'
         ];
 
-        // Создание всех диаграмм
-        function createAllCharts() {
-            createChartWithColoredItems('completion-section', 'completion-chart', '%');
-            createChartWithColoredItems('direction-section', 'direction-chart');
-            createChartWithColoredItems('participants-section', 'participants-chart');
-            createChartWithColoredItems('competence-section', 'competence-chart', '%');
-            createChartWithColoredItems('final-section', 'final-chart', '%');
+        // Функция для создания осей с правильной нумерацией (от 0 до maxValue)
+        function createAxes(containerId, maxValue, isDecimal = false) {
+            const yAxis = document.getElementById(`y-axis-${containerId}`);
+            const xAxis = document.getElementById(`x-axis-${containerId}`);
+            const barsContainer = document.getElementById(`${containerId}-histogram`);
+
+            // Очищаем оси
+            yAxis.innerHTML = '';
+            xAxis.innerHTML = '';
+
+            // Удаляем старые линии сетки
+            document.querySelectorAll(`#${containerId}-histogram .y-gridline`).forEach(el => el.remove());
+
+            // Создаем 5 горизонтальных линий сетки с подписями
+            for (let i = 0; i <= 4; i++) {
+                const value = (maxValue * i / 4).toFixed(isDecimal ? 1 : 0);
+                const positionPercent = (4 - i) * 25; // Инвертируем для правильного расположения (0 внизу)
+
+                // Создаем подпись на оси Y
+                const tick = document.createElement('div');
+                tick.className = 'y-tick';
+                tick.style.bottom = `${positionPercent}%`;
+                tick.textContent = value;
+                yAxis.appendChild(tick);
+
+                // Создаем горизонтальную линию сетки
+                const gridline = document.createElement('div');
+                gridline.className = 'y-gridline';
+                gridline.style.bottom = `${positionPercent}%`;
+                barsContainer.appendChild(gridline);
+            }
+
+            // Добавляем подписи на оси X
+            const barLabels = document.querySelectorAll(`#${containerId}-histogram .bar-label`);
+            barLabels.forEach((label, i) => {
+                const tick = document.createElement('div');
+                tick.className = 'x-tick';
+                tick.style.left = `${(i * 30 + 15)}%`;
+                tick.textContent = label.textContent;
+                xAxis.appendChild(tick);
+            });
         }
 
-        // Функция для создания диаграммы с цветными элементами
-        function createChartWithColoredItems(sectionId, chartId, suffix = '') {
-            const section = document.getElementById(sectionId);
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function () {
+            // Инициализация круговых диаграмм
+            initCharts();
+
+            // Рассчитываем максимальные значения для каждой гистограммы
+            const timeValues = Array.from(document.querySelectorAll('#time-histogram .bar'))
+                .map(bar => parseFloat(bar.dataset.value));
+            const attemptsValues = Array.from(document.querySelectorAll('#attempts-histogram .bar'))
+                .map(bar => parseFloat(bar.dataset.value));
+
+            // Создаем оси с правильной нумерацией (от 0 до максимума)
+            createAxes('time', Math.max(...timeValues));
+            createAxes('attempts', Math.max(...attemptsValues), true);
+
+            // Анимируем гистограммы если панель открыта
+            if (document.getElementById('averagePanel').classList.contains('active')) {
+                animateHistograms('open');
+            }
+        });
+
+        // Инициализация всех диаграмм
+        function initCharts() {
+            document.querySelectorAll('.stat-section').forEach(section => {
+                const chartId = section.querySelector('.donut-chart').id;
+                const suffix = chartId.includes('completion') ||
+                    chartId.includes('competence') ||
+                    chartId.includes('final') ? '%' : '';
+                createChart(section, chartId, suffix);
+            });
+        }
+
+        // Создание диаграммы
+        function createChart(section, chartId, suffix = '') {
             const dataItems = section.querySelectorAll('.data-item');
+            const chart = document.getElementById(chartId);
+            const tooltip = chart.closest('.chart-container').querySelector('.chart-tooltip');
+            const tooltipValue = tooltip.querySelector('.tooltip-value');
 
             const values = [];
             const colors = [];
@@ -619,14 +792,20 @@
             dataItems.forEach((item, index) => {
                 const value = parseFloat(item.dataset.value);
                 const color = item.dataset.color || chartColors[index % chartColors.length];
+                const label = item.querySelector('.data-label').textContent;
 
                 values.push(value);
                 colors.push(color);
-                labels.push(item.querySelector('.data-label').textContent);
+                labels.push(label);
 
-                // Применяем цвет к элементу списка
+                // Стилизация элемента списка
                 item.style.borderLeft = `4px solid ${color}`;
                 item.querySelector('.data-value').style.color = color;
+
+                // Добавляем обработчик клика для выделения сегмента
+                item.addEventListener('click', function () {
+                    highlightChartSegment(chartId, index);
+                });
             });
 
             const total = values.reduce((sum, val) => sum + val, 0);
@@ -635,27 +814,20 @@
 
             values.forEach((value, i) => {
                 const percent = (value / total * 100).toFixed(1);
-                const color = colors[i];
-
-                gradientStops.push(`${color} ${accumulated}%`);
+                gradientStops.push(`${colors[i]} ${accumulated}%`);
                 accumulated += parseFloat(percent);
-                gradientStops.push(`${color} ${accumulated}%`);
+                gradientStops.push(`${colors[i]} ${accumulated}%`);
             });
 
-            const chart = document.getElementById(chartId);
             chart.style.setProperty('--segment-colors', gradientStops.join(', '));
 
             // Настройка подсказок
-            const chartContainer = chart.closest('.chart-container');
-            const tooltip = chartContainer.querySelector('.chart-tooltip');
-            const tooltipValue = tooltip.querySelector('.tooltip-value');
-
             chart.addEventListener('mousemove', (e) => {
                 const rect = chart.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
                 const angle = Math.atan2(y, x) * 180 / Math.PI;
-                const normalizedAngle = (angle + 450) % 360; // 0° вверху
+                const normalizedAngle = (angle + 450) % 360;
 
                 let accumulatedPercent = 0;
                 let foundIndex = -1;
@@ -683,45 +855,69 @@
             });
         }
 
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function () {
-            createAllCharts();
-        });
-        // Общая функция для переключения панелей
+        // Выделение сегмента диаграммы при клике на элемент
+        function highlightChartSegment(chartId, segmentIndex) {
+            const chart = document.getElementById(chartId);
+            const section = chart.closest('.stat-section');
+            const dataItems = section.querySelectorAll('.data-item');
+
+            // Снимаем выделение со всех элементов
+            dataItems.forEach(item => item.classList.remove('active'));
+
+            // Выделяем выбранный элемент
+            dataItems[segmentIndex].classList.add('active');
+
+            // Анимация выделения сегмента (пульсация)
+            chart.style.transform = 'scale(1.05)';
+            chart.style.boxShadow = `0 0 0 5px ${dataItems[segmentIndex].dataset.color}40`;
+
+            setTimeout(() => {
+                chart.style.transform = '';
+                chart.style.boxShadow = '';
+            }, 300);
+        }
+
+        // Переключение панелей
         function togglePanel(panelId, button) {
             const panel = document.getElementById(panelId);
             const arrow = button.querySelector('.arrow');
-            panel.classList.toggle('active');
-            arrow.classList.toggle('active');
+            const isExpanded = panel.classList.toggle('active');
 
-            // Анимируем гистограммы при открытии панели
-            if (panelId === 'averagePanel' && panel.classList.contains('active')) {
-                animateHistograms();
+            arrow.classList.toggle('active');
+            button.setAttribute('aria-expanded', isExpanded);
+
+            if (panelId === 'averagePanel') {
+                if (isExpanded) {
+                    // Разворачиваем - анимируем появление
+                    animateHistograms('open');
+                } else {
+                    // Сворачиваем - анимируем исчезновение
+                    animateHistograms('close');
+                }
             }
         }
 
         // Анимация гистограмм
-        function animateHistograms() {
+        function animateHistograms(action) {
             const bars = document.querySelectorAll('.bar');
-            bars.forEach(bar => {
+            const maxValue = Math.max(...Array.from(bars).map(b => parseFloat(b.dataset.value)));
+
+            bars.forEach((bar, index) => {
                 const value = parseFloat(bar.dataset.value);
-                // Для времени (макс 30) высота = value * 6px
-                // Для попыток (макс 1.2) высота = value * 150px
-                const maxHeight = bar.closest('#time-histogram') ? 6 : 150;
-                bar.style.height = (value * maxHeight) + 'px';
+                const targetHeight = action === 'open' ? (value / maxValue) * 180 : 0;
+                const delay = index * 100;
+
+                // Сбрасываем текущую анимацию
+                bar.style.transition = 'none';
+                bar.style.height = action === 'open' ? '0' : `${(value / maxValue) * 180}px`;
+
+                // Запускаем новую анимацию с небольшим отступом времени
+                setTimeout(() => {
+                    bar.style.transition = `height 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) ${action === 'close' ? delay + 'ms' : ''}`;
+                    bar.style.height = `${targetHeight}px`;
+                }, 10);
             });
         }
-
-        // В DOMContentLoaded добавьте:
-        document.addEventListener('DOMContentLoaded', function () {
-            // Ваша существующая инициализация
-            createAllCharts();
-
-            // Если панель средних значений открыта по умолчанию
-            if (document.getElementById('averagePanel').classList.contains('active')) {
-                animateHistograms();
-            }
-        });
     </script>
 </body>
 </html>
