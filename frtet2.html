@@ -6,7 +6,6 @@
     <title>Статистика с цветными элементами</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Все стили остаются как в предыдущей версии */
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
@@ -65,48 +64,6 @@
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
-        }
-
-        /* Стили для круговых диаграмм */
-        .chart-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 20px;
-        }
-
-        .donut-chart {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: conic-gradient(var(--segment-colors));
-            transition: transform 0.3s;
-            cursor: pointer;
-        }
-
-        .chart-container:hover .donut-chart {
-            transform: scale(1.05);
-        }
-
-        .chart-tooltip {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(255, 255, 255, 0.95);
-            padding: 12px 18px;
-            border-radius: 10px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            text-align: center;
-            min-width: 140px;
-            z-index: 10;
-        }
-
-        .chart-container:hover .chart-tooltip {
-            opacity: 1;
         }
 
         .stat-box {
@@ -407,6 +364,93 @@
             height: 300px;
         }
 
+        .time-impact-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .direction-selector {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .direction-select {
+            padding: 12px 24px;
+            border-radius: 25px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .direction-select:hover {
+                border-color: #4CAF50;
+                box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+            }
+
+        .impact-charts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 20px;
+        }
+
+        .donut-chart {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(var(--segment-colors));
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .chart-container:hover .donut-chart {
+            transform: scale(1.05);
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            text-align: center;
+            min-width: 140px;
+            z-index: 10;
+        }
+
+        .chart-container:hover .chart-tooltip {
+            opacity: 1;
+        }
+
+        .tooltip-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .tooltip-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
         @media (max-width: 768px) {
             .stats-container {
                 grid-template-columns: 1fr;
@@ -686,7 +730,6 @@
                         <canvas class="time-series-chart" id="stage1Chart"></canvas>
                     </div>
                 </div>
-
                 <div class="stage-chart">
                     <h3 class="stage-chart-title">
                         <span class="stage-badge">2 этап</span>
@@ -695,13 +738,94 @@
                         <canvas class="time-series-chart" id="stage2Chart"></canvas>
                     </div>
                 </div>
-
                 <div class="stage-chart">
                     <h3 class="stage-chart-title">
                         <span class="stage-badge">3 этап</span>
                     </h3>
                     <div class="chart-wrapper">
                         <canvas class="time-series-chart" id="stage3Chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Панель влияния времени -->
+    <button class="panel-header" onclick="togglePanel('timeImpactPanel', this)" aria-expanded="false">
+        <span>Влияние времени на результаты ассесмента</span>
+        <span class="arrow">▼</span>
+    </button>
+
+    <div class="panel-content" id="timeImpactPanel">
+        <div class="time-impact-container">
+            <div class="direction-selector">
+                <select id="directionSelect" class="direction-select">
+                    <option value="" disabled selected>Выберите направление</option>
+                    <option>Разработка на платформе «IC: Предприятие»</option>
+                    <option>Разработчик виртуальной и дополненной реальности</option>
+                    <option>Современные технологии получения и анализа данных в «Умном городе»</option>
+                    <option>Анализ данных для прикладных областей</option>
+                    <option>Аналитика больших данных в строительстве</option>
+                    <option>Цифровые технологии управления «Умным городом»</option>
+                </select>
+            </div>
+
+            <div class="impact-charts" id="impactCharts">
+                <div class="stat-section">
+                    <h3>Быстрее среднего 1 этап</h3>
+                    <div class="chart-container">
+                        <div class="donut-chart" id="fast-chart"></div>
+                        <div class="chart-tooltip">
+                            <div class="tooltip-title">Наведите на сектор</div>
+                            <div class="tooltip-value">0%</div>
+                        </div>
+                    </div>
+                    <div class="stat-data">
+                        <div class="data-item" data-value="25" data-color="#4CAF50">
+                            <span class="data-label">Экспертный</span>
+                            <span class="data-value">25%</span>
+                        </div>
+                        <div class="data-item" data-value="35" data-color="#2196F3">
+                            <span class="data-label">Продвинутый</span>
+                            <span class="data-value">35%</span>
+                        </div>
+                        <div class="data-item" data-value="25" data-color="#FFC107">
+                            <span class="data-label">Базовый</span>
+                            <span class="data-value">25%</span>
+                        </div>
+                        <div class="data-item" data-value="15" data-color="#9C27B0">
+                            <span class="data-label">Минимальный исходный</span>
+                            <span class="data-value">15%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-section">
+                    <h3>Дольше среднего 1 этап</h3>
+                    <div class="chart-container">
+                        <div class="donut-chart" id="slow-chart"></div>
+                        <div class="chart-tooltip">
+                            <div class="tooltip-title">Наведите на сектор</div>
+                            <div class="tooltip-value">0%</div>
+                        </div>
+                    </div>
+                    <div class="stat-data">
+                        <div class="data-item" data-value="15" data-color="#4CAF50">
+                            <span class="data-label">Экспертный</span>
+                            <span class="data-value">15%</span>
+                        </div>
+                        <div class="data-item" data-value="25" data-color="#2196F3">
+                            <span class="data-label">Продвинутый</span>
+                            <span class="data-value">25%</span>
+                        </div>
+                        <div class="data-item" data-value="35" data-color="#FFC107">
+                            <span class="data-label">Базовый</span>
+                            <span class="data-value">35%</span>
+                        </div>
+                        <div class="data-item" data-value="25" data-color="#9C27B0">
+                            <span class="data-label">Минимальный исходный</span>
+                            <span class="data-value">25%</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -893,6 +1017,24 @@
             });
         }
 
+        // Обработчики для новой панели
+        function initImpactCharts() {
+            const sections = document.querySelectorAll('#timeImpactPanel .stat-section');
+            sections.forEach(section => {
+                const chartId = section.querySelector('.donut-chart').id;
+                createChart(section, chartId, '%');
+            });
+        }
+
+        document.getElementById('directionSelect').addEventListener('change', function () {
+            document.getElementById('impactCharts').style.opacity = 0;
+            setTimeout(() => {
+                // Здесь можно добавить загрузку данных по выбранному направлению
+                document.getElementById('impactCharts').style.opacity = 1;
+                initImpactCharts();
+            }, 300);
+        });
+
         // Управление панелями
         function togglePanel(panelId, button) {
             const panel = document.getElementById(panelId);
@@ -904,6 +1046,9 @@
 
             if (panelId === 'averagePanel') {
                 animateHistograms(isExpanded ? 'open' : 'close');
+            }
+            if (panelId === 'timeImpactPanel' && isExpanded) {
+                initImpactCharts();
             }
         }
 
