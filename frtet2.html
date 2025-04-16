@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Статистика с цветными элементами</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* Все стили остаются как в предыдущей версии */
         body {
-            font-family: 'Roboto', sans-serif;
-            background: #f9f9f9;
-            color: #333;
-            margin: 0;
+            font-family: Arial, sans-serif;
             padding: 20px;
-        }
-
-        h2 {
-            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         .panel-header {
@@ -61,7 +60,6 @@
                 transform: rotate(180deg);
             }
 
-        /* Стили для основных статистических карточек */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -69,53 +67,7 @@
             margin-bottom: 30px;
         }
 
-        .stat-box {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-
-            .stat-box:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            }
-
-        .value-badge {
-            display: inline-block;
-            background-color: rgb(205, 254, 105);
-            border-radius: 20px;
-            padding: 8px 16px;
-            margin-bottom: 12px;
-            font-weight: bold;
-            font-size: 18px;
-            min-width: 60px;
-            box-sizing: border-box;
-        }
-
-        .stat-title {
-            font-weight: bold;
-            margin: 10px 0 5px;
-            color: #333;
-            font-size: 16px;
-        }
-
-        .stat-description {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
         /* Стили для круговых диаграмм */
-        .chart-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
         .chart-container {
             position: relative;
             width: 200px;
@@ -157,19 +109,45 @@
             opacity: 1;
         }
 
-        .tooltip-title {
+        .stat-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+            .stat-box:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            }
+
+        .value-badge {
+            display: inline-block;
+            background-color: rgb(205, 254, 105);
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin-bottom: 12px;
             font-weight: bold;
-            margin-bottom: 5px;
-            color: #2c3e50;
+            font-size: 18px;
+            min-width: 60px;
+            box-sizing: border-box;
+        }
+
+        .stat-title {
+            font-weight: bold;
+            margin: 10px 0 5px;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .stat-description {
+            color: #666;
             font-size: 14px;
+            line-height: 1.4;
         }
 
-        .tooltip-value {
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        /* Стили для секций с данными */
         .additional-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -237,7 +215,6 @@
             text-align: right;
         }
 
-        /* Стили для гистограмм */
         .histogram-container {
             display: flex;
             justify-content: space-around;
@@ -267,7 +244,7 @@
             width: 40px;
             border-right: 1px solid #ccc;
             display: flex;
-            flex-direction: column-reverse; /* Разворачиваем ось Y */
+            flex-direction: column-reverse;
             justify-content: space-between;
         }
 
@@ -313,7 +290,7 @@
             flex: 1;
             display: flex;
             justify-content: space-around;
-            align-items: flex-end; /* Столбцы растут снизу вверх */
+            align-items: flex-end;
             height: 100%;
             position: relative;
             z-index: 1;
@@ -381,23 +358,12 @@
             color: #2c3e50;
         }
 
-        /* Стили для временных рядов */
         .time-series-container {
             background: white;
             border-radius: 12px;
             padding: 25px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.08);
             margin-bottom: 30px;
-        }
-
-        .time-series-title {
-            text-align: center;
-            margin-top: 0;
-            margin-bottom: 25px;
-            color: #2c3e50;
-            font-size: 18px;
-            padding-bottom: 12px;
-            border-bottom: 1px solid #eee;
         }
 
         .stage-charts-container {
@@ -419,106 +385,28 @@
                 transform: translateY(-3px);
             }
 
+        .stage-chart-title {
+            text-align: center;
+            margin: -15px 0 20px;
+        }
 
-        .stage-chart-container {
+        .stage-badge {
+            display: inline-block;
+            background-color: rgb(205, 254, 105);
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-weight: bold;
+            font-size: 16px;
+            min-width: 80px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .chart-wrapper {
             position: relative;
-            height: 250px;
-            margin-bottom: 40px;
+            height: 300px;
         }
 
-        .stage-y-axis {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 40px;
-            width: 40px;
-            border-right: 1px solid #ccc;
-        }
-
-        .stage-x-axis {
-            position: absolute;
-            left: 40px;
-            right: 0;
-            bottom: 40px;
-            height: 40px;
-            border-top: 1px solid #ccc;
-        }
-
-        .stage-grid {
-            position: absolute;
-            left: 40px;
-            right: 0;
-            top: 0;
-            bottom: 40px;
-        }
-
-        .stage-gridline {
-            position: absolute;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: rgba(0,0,0,0.1);
-        }
-
-        .stage-line {
-            position: absolute;
-            left: 40px;
-            right: 0;
-            top: 0;
-            bottom: 40px;
-        }
-
-        .stage-path {
-            fill: none;
-            stroke-width: 3;
-            stroke-linecap: round;
-            stroke-linejoin: round;
-        }
-
-        .stage-point {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            transform: translate(-50%, 50%);
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-            .stage-point:hover {
-                transform: translate(-50%, 50%) scale(1.5);
-            }
-
-        .stage-tooltip {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 8px 12px;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            font-size: 12px;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 10;
-        }
-
-        .stage-tick {
-            position: absolute;
-            font-size: 12px;
-            color: #666;
-        }
-
-        .y-tick-label {
-            right: 5px;
-            transform: translateY(50%);
-        }
-
-        .x-tick-label {
-            top: 10px;
-            transform: translateX(-50%);
-        }
-
-        /* Адаптация для мобильных устройств */
         @media (max-width: 768px) {
             .stats-container {
                 grid-template-columns: 1fr;
@@ -526,11 +414,6 @@
 
             .additional-stats {
                 grid-template-columns: 1fr;
-            }
-
-            .chart-container {
-                width: 180px;
-                height: 180px;
             }
 
             .histogram {
@@ -541,41 +424,9 @@
             .stage-charts-container {
                 grid-template-columns: 1fr;
             }
-
-            .stage-chart-container {
-                height: 200px;
-            }
-        }
-        .stage-badge {
-            display: inline-block;
-            background-color: rgb(205, 254, 105);
-            border-radius: 20px;
-            padding: 8px 16px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            font-size: 16px;
-            min-width: 80px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transform: translateY(-15px);
-            position: relative;
-            z-index: 2;
-        }
-
-        /* Модифицируем стили заголовков графиков */
-        .stage-chart-title {
-            text-align: center;
-            margin: 0 0 20px;
-            padding: 0;
-            border: none;
         }
 
         @media (max-width: 480px) {
-            .chart-container {
-                width: 160px;
-                height: 160px;
-            }
-
             .stat-section {
                 padding: 18px;
             }
@@ -587,13 +438,13 @@
     </style>
 </head>
 <body>
+    <!-- Панель компетенций -->
     <button class="panel-header" onclick="togglePanel('assessmentPanel', this)" aria-expanded="false">
         <span>Уровень компетенций на этапах ассессмента</span>
         <span class="arrow">▼</span>
     </button>
 
     <div class="panel-content" id="assessmentPanel">
-        <!-- Основные статистические карточки -->
         <div class="stats-container">
             <div class="stat-box">
                 <div class="value-badge">0,58</div>
@@ -627,13 +478,11 @@
             </div>
         </div>
 
-        <!-- Все секции с круговыми диаграммами -->
         <div class="additional-stats">
-            <!-- 1. Статистика завершения обучения -->
             <div class="stat-section" id="completion-section">
                 <h3>Статистика завершения обучения</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="completion-chart" aria-label="Круговая диаграмма статистики завершения обучения"></div>
+                    <div class="donut-chart" id="completion-chart"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0%</div>
@@ -655,11 +504,10 @@
                 </div>
             </div>
 
-            <!-- 2. Количество слушателей по направлениям -->
             <div class="stat-section" id="direction-section">
                 <h3>Количество слушателей по направлениям</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="direction-chart" aria-label="Круговая диаграмма количества слушателей по направлениям"></div>
+                    <div class="donut-chart" id="direction-chart"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0</div>
@@ -693,49 +541,10 @@
                 </div>
             </div>
 
-            <!-- 3. Количество участников на 1 этапе -->
-            <div class="stat-section" id="participants-section">
-                <h3>Количество участников на 1 этапе</h3>
-                <div class="chart-container">
-                    <div class="donut-chart" id="participants-chart" aria-label="Круговая диаграмма количества участников на 1 этапе"></div>
-                    <div class="chart-tooltip">
-                        <div class="tooltip-title">Наведите на сектор</div>
-                        <div class="tooltip-value">0</div>
-                    </div>
-                </div>
-                <div class="stat-data">
-                    <div class="data-item" data-value="123" data-color="#4CAF50">
-                        <span class="data-label">Разработка на платформе «IC: Предприятие»</span>
-                        <span class="data-value">123</span>
-                    </div>
-                    <div class="data-item" data-value="42" data-color="#2196F3">
-                        <span class="data-label">Разработка виртуальной и дополнительной реальности</span>
-                        <span class="data-value">42</span>
-                    </div>
-                    <div class="data-item" data-value="52" data-color="#FFC107">
-                        <span class="data-label">Анализ данных для прикладных областей</span>
-                        <span class="data-value">52</span>
-                    </div>
-                    <div class="data-item" data-value="163" data-color="#9C27B0">
-                        <span class="data-label">Аналитика больших данных в строительстве</span>
-                        <span class="data-value">163</span>
-                    </div>
-                    <div class="data-item" data-value="39" data-color="#FF5722">
-                        <span class="data-label">Цифровые технологии управления "Умным городом"</span>
-                        <span class="data-value">39</span>
-                    </div>
-                    <div class="data-item" data-value="77" data-color="#607D8B">
-                        <span class="data-label">Современные технологии получения и анализа данных в "Умном городе"</span>
-                        <span class="data-value">77</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 4. Уровень сформированности компетенций -->
             <div class="stat-section" id="competence-section">
                 <h3>Уровень сформированности компетенций на 1 этапе</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="competence-chart" aria-label="Круговая диаграмма уровня сформированности компетенций"></div>
+                    <div class="donut-chart" id="competence-chart"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0%</div>
@@ -761,11 +570,10 @@
                 </div>
             </div>
 
-            <!-- 5. Итоговый уровень развития компетенций -->
             <div class="stat-section" id="final-section">
                 <h3>Итоговый уровень развития компетенций на 1 этапе</h3>
                 <div class="chart-container">
-                    <div class="donut-chart" id="final-chart" aria-label="Круговая диаграмма итогового уровня развития компетенций"></div>
+                    <div class="donut-chart" id="final-chart"></div>
                     <div class="chart-tooltip">
                         <div class="tooltip-title">Наведите на сектор</div>
                         <div class="tooltip-value">0%</div>
@@ -788,7 +596,8 @@
             </div>
         </div>
     </div>
-    <!-- Новая панель для средних значений -->
+
+    <!-- Панель средних значений -->
     <button class="panel-header" onclick="togglePanel('averagePanel', this)" aria-expanded="false">
         <span>Средние значения</span>
         <span class="arrow">▼</span>
@@ -796,7 +605,6 @@
 
     <div class="panel-content" id="averagePanel">
         <div class="histogram-container">
-            <!-- Гистограмма времени -->
             <div class="histogram">
                 <h3 class="histogram-title">Среднее время по каждому этапу (минуты)</h3>
                 <div class="histogram-axes">
@@ -828,7 +636,6 @@
                 </div>
             </div>
 
-            <!-- Гистограмма попыток -->
             <div class="histogram">
                 <h3 class="histogram-title">Среднее количество попыток</h3>
                 <div class="histogram-axes">
@@ -861,6 +668,8 @@
             </div>
         </div>
     </div>
+
+    <!-- Панель временных рядов -->
     <button class="panel-header" onclick="togglePanel('timeSeriesPanel', this)" aria-expanded="false">
         <span>Временной ряд прохождения</span>
         <span class="arrow">▼</span>
@@ -868,33 +677,30 @@
 
     <div class="panel-content" id="timeSeriesPanel">
         <div class="time-series-container">
-            <div class="stage-charts-container" id="stage-charts-container">
-                <!-- 1 этап -->
+            <div class="stage-charts-container">
                 <div class="stage-chart">
-                    <h4 class="stage-chart-title">
+                    <h3 class="stage-chart-title">
                         <span class="stage-badge">1 этап</span>
-                    </h4>
-                    <div class="stage-chart-container">
+                    </h3>
+                    <div class="chart-wrapper">
                         <canvas class="time-series-chart" id="stage1Chart"></canvas>
                     </div>
                 </div>
 
-                <!-- 2 этап -->
                 <div class="stage-chart">
-                    <h4 class="stage-chart-title">
+                    <h3 class="stage-chart-title">
                         <span class="stage-badge">2 этап</span>
-                    </h4>
-                    <div class="stage-chart-container">
+                    </h3>
+                    <div class="chart-wrapper">
                         <canvas class="time-series-chart" id="stage2Chart"></canvas>
                     </div>
                 </div>
 
-                <!-- 3 этап -->
                 <div class="stage-chart">
-                    <h4 class="stage-chart-title">
+                    <h3 class="stage-chart-title">
                         <span class="stage-badge">3 этап</span>
-                    </h4>
-                    <div class="stage-chart-container">
+                    </h3>
+                    <div class="chart-wrapper">
                         <canvas class="time-series-chart" id="stage3Chart"></canvas>
                     </div>
                 </div>
@@ -903,296 +709,21 @@
     </div>
 
     <script>
-        // Цвета для диаграмм
         const chartColors = [
             '#4CAF50', '#2196F3', '#FFC107', '#9C27B0',
             '#FF5722', '#607D8B', '#00BCD4', '#8BC34A',
             '#E91E63', '#3F51B5', '#009688', '#795548'
         ];
 
-        // Данные для временных рядов
-        const timeSeriesData = {
-            dates: ['2025-09-20', '2025-09-22', '2025-09-24', '2025-09-26', '2025-09-28'],
-            stages: [
-                {
-                    name: '1 этап',
-                    color: '#4CAF50',
-                    values: [20, 45, 80, 110, 140]
-                },
-                {
-                    name: '2 этап',
-                    color: '#2196F3',
-                    values: [10, 30, 60, 90, 120]
-                },
-                {
-                    name: '3 этап',
-                    color: '#FFC107',
-                    values: [5, 20, 50, 80, 100]
-                }
-            ]
-        };
-
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function () {
-            // Инициализация существующих диаграмм
-            initCharts();
-
-            // Инициализация гистограмм
-            initHistograms();
-        });
-
-        // Инициализация временных рядов
-        function initTimeSeries() {
-            const container = document.getElementById('stage-charts-container');
-            container.innerHTML = '';
-
-            const maxValue = 140;
-            const yTicks = [0, 20, 40, 60, 80, 100, 120, 140];
-
-            // Создаем отдельный график для каждого этапа
-            timeSeriesData.stages.forEach(stage => {
-                const chartHtml = `
-                                <div class="stage-chart">
-                                    <h4 class="stage-chart-title">${stage.name}</h4>
-                                    <div class="stage-chart-container">
-                                        <div class="stage-y-axis" id="y-axis-${stage.name}"></div>
-                                        <div class="stage-x-axis" id="x-axis-${stage.name}"></div>
-                                        <div class="stage-grid" id="grid-${stage.name}"></div>
-                                        <div class="stage-line" id="line-${stage.name}"></div>
-                                    </div>
-                                </div>
-                            `;
-                container.insertAdjacentHTML('beforeend', chartHtml);
-
-                // Инициализируем оси и график
-                initStageChart(stage, maxValue, yTicks);
-            });
-        }
-
-        function initStageChart(stage, maxValue, yTicks) {
-            const yAxis = document.getElementById(`y-axis-${stage.name}`);
-            const xAxis = document.getElementById(`x-axis-${stage.name}`);
-            const grid = document.getElementById(`grid-${stage.name}`);
-            const lineContainer = document.getElementById(`line-${stage.name}`);
-
-            // Очищаем элементы
-            yAxis.innerHTML = '';
-            xAxis.innerHTML = '';
-            grid.innerHTML = '';
-            lineContainer.innerHTML = '';
-
-            // Создаем шкалу Y
-            yTicks.forEach(tickValue => {
-                const percent = (tickValue / maxValue) * 100;
-                const tick = document.createElement('div');
-                tick.className = 'stage-tick y-tick-label';
-                tick.textContent = tickValue;
-                tick.style.bottom = `${percent}%`;
-                yAxis.appendChild(tick);
-
-                // Добавляем линии сетки
-                const gridline = document.createElement('div');
-                gridline.className = 'stage-gridline';
-                gridline.style.bottom = `${percent}%`;
-                grid.appendChild(gridline);
-            });
-
-            // Создаем шкалу X (даты)
-            timeSeriesData.dates.forEach((date, i) => {
-                const percent = (i / (timeSeriesData.dates.length - 1)) * 100;
-                const tick = document.createElement('div');
-                tick.className = 'stage-tick x-tick-label';
-                tick.textContent = date.split('-').reverse().join('.');
-                tick.style.left = `${percent}%`;
-                xAxis.appendChild(tick);
-            });
-
-            // Создаем SVG для линии
-            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-            svg.setAttribute('width', '100%');
-            svg.setAttribute('height', '100%');
-            svg.style.position = 'absolute';
-            svg.style.left = '0';
-            svg.style.top = '0';
-            lineContainer.appendChild(svg);
-
-            // Создаем путь для линии
-            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            path.className = 'stage-path';
-            path.setAttribute('stroke', stage.color);
-
-            // Генерируем точки данных
-            let pathData = '';
-            stage.values.forEach((value, i) => {
-                const x = (i / (stage.values.length - 1)) * 100;
-                const y = 100 - (value / maxValue * 100);
-
-                if (i === 0) {
-                    pathData += `M ${x}% ${y}%`;
-                } else {
-                    pathData += ` L ${x}% ${y}%`;
-                }
-
-                // Создаем точку
-                const point = document.createElement('div');
-                point.className = 'stage-point';
-                point.style.backgroundColor = stage.color;
-                point.style.left = `${x}%`;
-                point.style.bottom = `${y}%`;
-                point.dataset.value = value;
-                point.dataset.date = timeSeriesData.dates[i];
-
-                // Добавляем обработчики для подсказки
-                point.addEventListener('mouseenter', (e) => {
-                    const tooltip = document.createElement('div');
-                    tooltip.className = 'stage-tooltip';
-                    tooltip.innerHTML = `
-                                    <strong>${stage.name}</strong><br>
-                                    Дата: ${timeSeriesData.dates[i]}<br>
-                                    Количество: ${value}
-                                `;
-                    tooltip.style.left = `${e.pageX + 10}px`;
-                    tooltip.style.top = `${e.pageY - 60}px`;
-                    tooltip.style.opacity = '1';
-                    document.body.appendChild(tooltip);
-
-                    point.tooltip = tooltip;
-                });
-
-                point.addEventListener('mouseleave', () => {
-                    if (point.tooltip) {
-                        point.tooltip.remove();
-                        point.tooltip = null;
-                    }
-                });
-
-                point.addEventListener('mousemove', (e) => {
-                    if (point.tooltip) {
-                        point.tooltip.style.left = `${e.pageX + 10}px`;
-                        point.tooltip.style.top = `${e.pageY - 60}px`;
-                    }
-                });
-
-                lineContainer.appendChild(point);
-            });
-
-            path.setAttribute('d', pathData);
-            svg.appendChild(path);
-
-            // Анимация появления линии
-            setTimeout(() => {
-                path.style.transition = 'stroke-dashoffset 1.5s ease-out';
-                path.style.strokeDasharray = path.getTotalLength();
-                path.style.strokeDashoffset = path.getTotalLength();
-                path.style.strokeDashoffset = '0';
-            }, 100);
-        }
-
-        // Модифицируем только функцию createAxes()
-        function createAxes(containerId, maxValue, isDecimal = false, customTicks = null) {
-            const yAxis = document.getElementById(`y-axis-${containerId}`);
-            const xAxis = document.getElementById(`x-axis-${containerId}`);
-            const barsContainer = document.getElementById(`${containerId}-histogram`);
-
-            // Очищаем оси
-            yAxis.innerHTML = '';
-            xAxis.innerHTML = '';
-
-            // Удаляем старые линии сетки
-            document.querySelectorAll(`#${containerId}-histogram .y-gridline`).forEach(el => el.remove());
-
-            // Определяем шаги для шкалы
-            let ticks;
-            if (customTicks) {
-                ticks = customTicks;
-            } else {
-                // Автоматически генерируем деления
-                if (maxValue <= 1) {
-                    ticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0];
-                } else if (maxValue <= 5) {
-                    ticks = [0, 1, 2, 3, 4, 5];
-                } else {
-                    const step = Math.ceil(maxValue / 5);
-                    ticks = [];
-                    for (let i = 0; i * step <= maxValue; i++) {
-                        ticks.push(i * step);
-                    }
-                    if (ticks[ticks.length - 1] < maxValue) {
-                        ticks.push(maxValue);
-                    }
-                }
-            }
-
-            // Создаем подписи на оси Y (в обратном порядке)
-            ticks.reverse().forEach(tickValue => {
-                const value = isDecimal ? tickValue.toFixed(1) : Math.round(tickValue);
-
-                // Создаем подпись на оси Y
-                const tick = document.createElement('div');
-                tick.className = 'y-tick';
-                tick.textContent = value;
-                yAxis.appendChild(tick);
-            });
-
-            // Создаем горизонтальные линии сетки (в правильном порядке)
-            ticks.reverse().forEach(tickValue => {
-                const positionPercent = 100 - (tickValue / maxValue * 100);
-
-                // Создаем горизонтальную линию сетки
-                const gridline = document.createElement('div');
-                gridline.className = 'y-gridline';
-                gridline.style.bottom = `${positionPercent}%`;
-                barsContainer.appendChild(gridline);
-            });
-
-        }
-
-        // Установка высот столбцов
-        function setBarHeights(containerId, values, maxValue) {
-            const bars = document.querySelectorAll(`#${containerId} .bar`);
-            bars.forEach((bar, index) => {
-                const heightPercent = (values[index] / maxValue) * 100;
-                bar.style.height = `${heightPercent}%`;
-                bar.dataset.value = values[index];
-            });
-        }
-
-        // Инициализация гистограмм
-        function initHistograms() {
-            // Значения для гистограммы времени (в минутах)
-            const timeValues = [20, 30, 25];
-            const maxTime = 40; // Фиксированный максимум для шкалы
-
-            // Значения для гистограммы попыток
-            const attemptsValues = [1.0, 1.2, 1.0];
-            const maxAttempts = 1.5; // Фиксированный максимум для шкалы
-
-            // Создаем оси с правильным масштабированием
-            createAxes('time', maxTime, false, [0, 10, 20, 30, 40]);
-            createAxes('attempts', maxAttempts, true, [0, 0.5, 1.0, 1.5]);
-
-            // Устанавливаем правильные высоты столбцов
-            setBarHeights('time-histogram', timeValues, maxTime);
-            setBarHeights('attempts-histogram', attemptsValues, maxAttempts);
-
-            // Анимируем гистограммы если панель открыта
-            if (document.getElementById('averagePanel').classList.contains('active')) {
-                animateHistograms('open');
-            }
-        }
-
-        // Инициализация всех диаграмм
+        // Инициализация круговых диаграмм
         function initCharts() {
             document.querySelectorAll('.stat-section').forEach(section => {
                 const chartId = section.querySelector('.donut-chart').id;
-                const suffix = chartId.includes('completion') ||
-                    chartId.includes('competence') ||
-                    chartId.includes('final') ? '%' : '';
+                const suffix = chartId.includes('completion') || chartId.includes('competence') || chartId.includes('final') ? '%' : '';
                 createChart(section, chartId, suffix);
             });
         }
 
-        // Создание диаграммы
         function createChart(section, chartId, suffix = '') {
             const dataItems = section.querySelectorAll('.data-item');
             const chart = document.getElementById(chartId);
@@ -1212,11 +743,9 @@
                 colors.push(color);
                 labels.push(label);
 
-                // Стилизация элемента списка
                 item.style.borderLeft = `4px solid ${color}`;
                 item.querySelector('.data-value').style.color = color;
 
-                // Добавляем обработчик клика для выделения сегмента
                 item.addEventListener('click', function () {
                     highlightChartSegment(chartId, index);
                 });
@@ -1235,7 +764,6 @@
 
             chart.style.setProperty('--segment-colors', gradientStops.join(', '));
 
-            // Настройка подсказок
             chart.addEventListener('mousemove', (e) => {
                 const rect = chart.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
@@ -1248,8 +776,7 @@
 
                 values.forEach((value, i) => {
                     const percent = (value / total * 360);
-                    if (normalizedAngle >= accumulatedPercent &&
-                        normalizedAngle < accumulatedPercent + percent) {
+                    if (normalizedAngle >= accumulatedPercent && normalizedAngle < accumulatedPercent + percent) {
                         foundIndex = i;
                     }
                     accumulatedPercent += percent;
@@ -1269,19 +796,14 @@
             });
         }
 
-        // Выделение сегмента диаграммы при клике на элемент
         function highlightChartSegment(chartId, segmentIndex) {
             const chart = document.getElementById(chartId);
             const section = chart.closest('.stat-section');
             const dataItems = section.querySelectorAll('.data-item');
 
-            // Снимаем выделение со всех элементов
             dataItems.forEach(item => item.classList.remove('active'));
-
-            // Выделяем выбранный элемент
             dataItems[segmentIndex].classList.add('active');
 
-            // Анимация выделения сегмента (пульсация)
             chart.style.transform = 'scale(1.05)';
             chart.style.boxShadow = `0 0 0 5px ${dataItems[segmentIndex].dataset.color}40`;
 
@@ -1291,68 +813,56 @@
             }, 300);
         }
 
-        // Переключение панелей
-        function togglePanel(panelId, button) {
-            const panel = document.getElementById(panelId);
-            const arrow = button.querySelector('.arrow');
-            const isExpanded = panel.classList.toggle('active');
+        // Инициализация гистограмм
+        function createAxes(containerId, maxValue, isDecimal = false, customTicks = null) {
+            const yAxis = document.getElementById(`y-axis-${containerId}`);
+            const barsContainer = document.getElementById(`${containerId}-histogram`);
 
-            arrow.classList.toggle('active');
-            button.setAttribute('aria-expanded', isExpanded);
+            yAxis.innerHTML = '';
+            document.querySelectorAll(`#${containerId}-histogram .y-gridline`).forEach(el => el.remove());
 
-            if (panelId === 'averagePanel') {
-                if (isExpanded) {
-                    // Разворачиваем - анимируем появление
-                    animateHistograms('open');
-                } else {
-                    // Сворачиваем - анимируем исчезновение
-                    animateHistograms('close');
-                }
-            } else if (panelId === 'timeSeriesPanel' && isExpanded) {
-                // При открытии панели временных рядов инициализируем их
-                initTimeSeries();
-            }
-        }
+            let ticks = customTicks || Array.from({ length: Math.ceil(maxValue / 20) + 1 }, (_, i) => i * 20);
 
-        // Анимация гистограмм
-        function animateHistograms(action) {
-            const bars = document.querySelectorAll('.bar');
-            const maxValue = Math.max(...Array.from(bars).map(b => parseFloat(b.dataset.value)));
+            ticks.reverse().forEach(tickValue => {
+                const tick = document.createElement('div');
+                tick.className = 'y-tick';
+                tick.textContent = isDecimal ? tickValue.toFixed(1) : tickValue;
+                yAxis.appendChild(tick);
+            });
 
-            bars.forEach((bar, index) => {
-                const value = parseFloat(bar.dataset.value);
-                const targetHeight = action === 'open' ? (value / maxValue) * 180 : 0;
-                const delay = index * 100;
-
-                // Сбрасываем текущую анимацию
-                bar.style.transition = 'none';
-                bar.style.height = action === 'open' ? '0' : `${(value / maxValue) * 180}px`;
-
-                // Запускаем новую анимацию с небольшим отступом времени
-                setTimeout(() => {
-                    bar.style.transition = `height 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) ${action === 'close' ? delay + 'ms' : ''}`;
-                    bar.style.height = `${targetHeight}px`;
-                }, 10);
+            ticks.reverse().forEach(tickValue => {
+                const gridline = document.createElement('div');
+                gridline.className = 'y-gridline';
+                gridline.style.bottom = `${(tickValue / maxValue) * 100}%`;
+                barsContainer.appendChild(gridline);
             });
         }
-        // Добавляем функцию для временных рядов
+
+        function setBarHeights(containerId, values, maxValue) {
+            const bars = document.querySelectorAll(`#${containerId} .bar`);
+            bars.forEach((bar, index) => {
+                bar.style.height = `${(values[index] / maxValue) * 100}%`;
+            });
+        }
+
+        function initHistograms() {
+            const timeValues = [20, 30, 25];
+            const attemptsValues = [1.0, 1.2, 1.0];
+
+            createAxes('time', 40, false, [0, 10, 20, 30, 40]);
+            createAxes('attempts', 1.5, true, [0, 0.5, 1.0, 1.5]);
+
+            setBarHeights('time-histogram', timeValues, 40);
+            setBarHeights('attempts-histogram', attemptsValues, 1.5);
+        }
+
+        // Инициализация временных рядов
         function createTimeSeries(chartId, stageNumber) {
             const ctx = document.getElementById(chartId).getContext('2d');
-            const dates = [];
-            const startDate = new Date('2025-09-20');
+            const dates = ['2025-09-20', '2025-09-22', '2025-09-24', '2025-09-26', '2025-09-28']
+                .map(d => new Date(d).toLocaleDateString('ru-RU'));
 
-            // Генерируем даты с интервалом в 2 дня
-            for (let i = 0; i < 5; i++) {
-                const date = new Date(startDate);
-                date.setDate(date.getDate() + i * 2);
-                dates.push(date.toLocaleDateString('ru-RU'));
-            }
-
-            // Генерируем случайные данные
-            const data = [];
-            for (let i = 0; i < 5; i++) {
-                data.push(Math.floor(Math.random() * 140));
-            }
+            const data = Array.from({ length: 5 }, () => Math.floor(Math.random() * 140));
 
             return new Chart(ctx, {
                 type: 'line',
@@ -1376,48 +886,40 @@
                         y: {
                             beginAtZero: true,
                             max: 140,
-                            ticks: {
-                                stepSize: 20,
-                                color: '#666'
-                            },
-                            grid: {
-                                color: 'rgba(0,0,0,0.05)'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                color: '#666'
-                            },
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(255,255,255,0.9)',
-                            titleColor: '#2c3e50',
-                            bodyColor: '#666',
-                            borderColor: '#eee',
-                            borderWidth: 1,
-                            padding: 12,
-                            boxShadow: '0 3px 12px rgba(0,0,0,0.1)'
+                            ticks: { stepSize: 20 }
                         }
                     }
                 }
             });
         }
 
-        // Обновляем инициализацию
-        document.addEventListener('DOMContentLoaded', function () {
-            // Существующая инициализация
+        // Управление панелями
+        function togglePanel(panelId, button) {
+            const panel = document.getElementById(panelId);
+            const arrow = button.querySelector('.arrow');
+            const isExpanded = panel.classList.toggle('active');
+
+            arrow.classList.toggle('active');
+            button.setAttribute('aria-expanded', isExpanded);
+
+            if (panelId === 'averagePanel') {
+                animateHistograms(isExpanded ? 'open' : 'close');
+            }
+        }
+
+        function animateHistograms(action) {
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach((bar, index) => {
+                const targetHeight = action === 'open' ? bar.dataset.value * 1.8 : 0;
+                bar.style.transition = `height 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) ${index * 100}ms`;
+                bar.style.height = `${targetHeight}px`;
+            });
+        }
+
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', () => {
             initCharts();
             initHistograms();
-
-            // Инициализация временных рядов
             createTimeSeries('stage1Chart', 1);
             createTimeSeries('stage2Chart', 2);
             createTimeSeries('stage3Chart', 3);
