@@ -6,12 +6,15 @@
     <title>Статистика с цветными элементами</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f9f9f9;
+            font-family: 'Roboto', sans-serif;
+            background: #f9f9f9;
             color: #333;
-            max-width: 1200px;
-            margin: 0 auto;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h2 {
+            margin-bottom: 10px;
         }
 
         .panel-header {
@@ -255,20 +258,22 @@
         .histogram-axes {
             position: relative;
             height: 200px;
+            margin-bottom: 30px;
+            display: flex;
         }
 
         .y-axis {
-            position: absolute;
-            left: -40px;
-            top: 0;
-            bottom: 0;
+            position: relative;
             width: 40px;
             border-right: 1px solid #ccc;
+            display: flex;
+            flex-direction: column-reverse; /* Разворачиваем ось Y */
+            justify-content: space-between;
         }
 
         .x-axis {
             position: absolute;
-            left: 0;
+            left: 40px;
             right: 0;
             bottom: -30px;
             height: 30px;
@@ -276,8 +281,7 @@
         }
 
         .y-tick {
-            position: absolute;
-            left: 0;
+            position: relative;
             width: 100%;
             text-align: right;
             padding-right: 5px;
@@ -298,29 +302,22 @@
 
         .y-gridline {
             position: absolute;
-            left: 0;
+            left: 40px;
             right: 0;
             height: 1px;
             background: rgba(0,0,0,0.1);
             z-index: 0;
         }
 
-        .x-tick {
-            position: absolute;
-            top: 5px;
-            width: 30%;
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-        }
-
         .bars-container {
+            flex: 1;
             display: flex;
             justify-content: space-around;
-            align-items: flex-end;
+            align-items: flex-end; /* Столбцы растут снизу вверх */
             height: 100%;
             position: relative;
             z-index: 1;
+            padding-left: 10px;
         }
 
         .bar-wrapper {
@@ -337,6 +334,7 @@
             border-radius: 5px 5px 0 0;
             transition: height 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
             will-change: height;
+            position: relative;
         }
 
         .value-indicator {
@@ -383,6 +381,143 @@
             color: #2c3e50;
         }
 
+        /* Стили для временных рядов */
+        .time-series-container {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-bottom: 30px;
+        }
+
+        .time-series-title {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: #2c3e50;
+            font-size: 18px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stage-charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .stage-chart {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+            .stage-chart:hover {
+                transform: translateY(-3px);
+            }
+
+
+        .stage-chart-container {
+            position: relative;
+            height: 250px;
+            margin-bottom: 40px;
+        }
+
+        .stage-y-axis {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 40px;
+            width: 40px;
+            border-right: 1px solid #ccc;
+        }
+
+        .stage-x-axis {
+            position: absolute;
+            left: 40px;
+            right: 0;
+            bottom: 40px;
+            height: 40px;
+            border-top: 1px solid #ccc;
+        }
+
+        .stage-grid {
+            position: absolute;
+            left: 40px;
+            right: 0;
+            top: 0;
+            bottom: 40px;
+        }
+
+        .stage-gridline {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .stage-line {
+            position: absolute;
+            left: 40px;
+            right: 0;
+            top: 0;
+            bottom: 40px;
+        }
+
+        .stage-path {
+            fill: none;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .stage-point {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transform: translate(-50%, 50%);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+            .stage-point:hover {
+                transform: translate(-50%, 50%) scale(1.5);
+            }
+
+        .stage-tooltip {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 8px 12px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 10;
+        }
+
+        .stage-tick {
+            position: absolute;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .y-tick-label {
+            right: 5px;
+            transform: translateY(50%);
+        }
+
+        .x-tick-label {
+            top: 10px;
+            transform: translateX(-50%);
+        }
+
         /* Адаптация для мобильных устройств */
         @media (max-width: 768px) {
             .stats-container {
@@ -402,6 +537,37 @@
                 width: 100%;
                 padding: 20px 30px 40px 50px;
             }
+
+            .stage-charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .stage-chart-container {
+                height: 200px;
+            }
+        }
+        .stage-badge {
+            display: inline-block;
+            background-color: rgb(205, 254, 105);
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            font-size: 16px;
+            min-width: 80px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transform: translateY(-15px);
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Модифицируем стили заголовков графиков */
+        .stage-chart-title {
+            text-align: center;
+            margin: 0 0 20px;
+            padding: 0;
+            border: none;
         }
 
         @media (max-width: 480px) {
@@ -695,6 +861,47 @@
             </div>
         </div>
     </div>
+    <button class="panel-header" onclick="togglePanel('timeSeriesPanel', this)" aria-expanded="false">
+        <span>Временной ряд прохождения</span>
+        <span class="arrow">▼</span>
+    </button>
+
+    <div class="panel-content" id="timeSeriesPanel">
+        <div class="time-series-container">
+            <div class="stage-charts-container" id="stage-charts-container">
+                <!-- 1 этап -->
+                <div class="stage-chart">
+                    <h4 class="stage-chart-title">
+                        <span class="stage-badge">1 этап</span>
+                    </h4>
+                    <div class="stage-chart-container">
+                        <canvas class="time-series-chart" id="stage1Chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 2 этап -->
+                <div class="stage-chart">
+                    <h4 class="stage-chart-title">
+                        <span class="stage-badge">2 этап</span>
+                    </h4>
+                    <div class="stage-chart-container">
+                        <canvas class="time-series-chart" id="stage2Chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- 3 этап -->
+                <div class="stage-chart">
+                    <h4 class="stage-chart-title">
+                        <span class="stage-badge">3 этап</span>
+                    </h4>
+                    <div class="stage-chart-container">
+                        <canvas class="time-series-chart" id="stage3Chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Цвета для диаграмм
         const chartColors = [
@@ -703,8 +910,186 @@
             '#E91E63', '#3F51B5', '#009688', '#795548'
         ];
 
-        // Функция для создания осей с правильной нумерацией (от 0 до maxValue)
-        function createAxes(containerId, maxValue, isDecimal = false) {
+        // Данные для временных рядов
+        const timeSeriesData = {
+            dates: ['2025-09-20', '2025-09-22', '2025-09-24', '2025-09-26', '2025-09-28'],
+            stages: [
+                {
+                    name: '1 этап',
+                    color: '#4CAF50',
+                    values: [20, 45, 80, 110, 140]
+                },
+                {
+                    name: '2 этап',
+                    color: '#2196F3',
+                    values: [10, 30, 60, 90, 120]
+                },
+                {
+                    name: '3 этап',
+                    color: '#FFC107',
+                    values: [5, 20, 50, 80, 100]
+                }
+            ]
+        };
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function () {
+            // Инициализация существующих диаграмм
+            initCharts();
+
+            // Инициализация гистограмм
+            initHistograms();
+        });
+
+        // Инициализация временных рядов
+        function initTimeSeries() {
+            const container = document.getElementById('stage-charts-container');
+            container.innerHTML = '';
+
+            const maxValue = 140;
+            const yTicks = [0, 20, 40, 60, 80, 100, 120, 140];
+
+            // Создаем отдельный график для каждого этапа
+            timeSeriesData.stages.forEach(stage => {
+                const chartHtml = `
+                                <div class="stage-chart">
+                                    <h4 class="stage-chart-title">${stage.name}</h4>
+                                    <div class="stage-chart-container">
+                                        <div class="stage-y-axis" id="y-axis-${stage.name}"></div>
+                                        <div class="stage-x-axis" id="x-axis-${stage.name}"></div>
+                                        <div class="stage-grid" id="grid-${stage.name}"></div>
+                                        <div class="stage-line" id="line-${stage.name}"></div>
+                                    </div>
+                                </div>
+                            `;
+                container.insertAdjacentHTML('beforeend', chartHtml);
+
+                // Инициализируем оси и график
+                initStageChart(stage, maxValue, yTicks);
+            });
+        }
+
+        function initStageChart(stage, maxValue, yTicks) {
+            const yAxis = document.getElementById(`y-axis-${stage.name}`);
+            const xAxis = document.getElementById(`x-axis-${stage.name}`);
+            const grid = document.getElementById(`grid-${stage.name}`);
+            const lineContainer = document.getElementById(`line-${stage.name}`);
+
+            // Очищаем элементы
+            yAxis.innerHTML = '';
+            xAxis.innerHTML = '';
+            grid.innerHTML = '';
+            lineContainer.innerHTML = '';
+
+            // Создаем шкалу Y
+            yTicks.forEach(tickValue => {
+                const percent = (tickValue / maxValue) * 100;
+                const tick = document.createElement('div');
+                tick.className = 'stage-tick y-tick-label';
+                tick.textContent = tickValue;
+                tick.style.bottom = `${percent}%`;
+                yAxis.appendChild(tick);
+
+                // Добавляем линии сетки
+                const gridline = document.createElement('div');
+                gridline.className = 'stage-gridline';
+                gridline.style.bottom = `${percent}%`;
+                grid.appendChild(gridline);
+            });
+
+            // Создаем шкалу X (даты)
+            timeSeriesData.dates.forEach((date, i) => {
+                const percent = (i / (timeSeriesData.dates.length - 1)) * 100;
+                const tick = document.createElement('div');
+                tick.className = 'stage-tick x-tick-label';
+                tick.textContent = date.split('-').reverse().join('.');
+                tick.style.left = `${percent}%`;
+                xAxis.appendChild(tick);
+            });
+
+            // Создаем SVG для линии
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('width', '100%');
+            svg.setAttribute('height', '100%');
+            svg.style.position = 'absolute';
+            svg.style.left = '0';
+            svg.style.top = '0';
+            lineContainer.appendChild(svg);
+
+            // Создаем путь для линии
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.className = 'stage-path';
+            path.setAttribute('stroke', stage.color);
+
+            // Генерируем точки данных
+            let pathData = '';
+            stage.values.forEach((value, i) => {
+                const x = (i / (stage.values.length - 1)) * 100;
+                const y = 100 - (value / maxValue * 100);
+
+                if (i === 0) {
+                    pathData += `M ${x}% ${y}%`;
+                } else {
+                    pathData += ` L ${x}% ${y}%`;
+                }
+
+                // Создаем точку
+                const point = document.createElement('div');
+                point.className = 'stage-point';
+                point.style.backgroundColor = stage.color;
+                point.style.left = `${x}%`;
+                point.style.bottom = `${y}%`;
+                point.dataset.value = value;
+                point.dataset.date = timeSeriesData.dates[i];
+
+                // Добавляем обработчики для подсказки
+                point.addEventListener('mouseenter', (e) => {
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'stage-tooltip';
+                    tooltip.innerHTML = `
+                                    <strong>${stage.name}</strong><br>
+                                    Дата: ${timeSeriesData.dates[i]}<br>
+                                    Количество: ${value}
+                                `;
+                    tooltip.style.left = `${e.pageX + 10}px`;
+                    tooltip.style.top = `${e.pageY - 60}px`;
+                    tooltip.style.opacity = '1';
+                    document.body.appendChild(tooltip);
+
+                    point.tooltip = tooltip;
+                });
+
+                point.addEventListener('mouseleave', () => {
+                    if (point.tooltip) {
+                        point.tooltip.remove();
+                        point.tooltip = null;
+                    }
+                });
+
+                point.addEventListener('mousemove', (e) => {
+                    if (point.tooltip) {
+                        point.tooltip.style.left = `${e.pageX + 10}px`;
+                        point.tooltip.style.top = `${e.pageY - 60}px`;
+                    }
+                });
+
+                lineContainer.appendChild(point);
+            });
+
+            path.setAttribute('d', pathData);
+            svg.appendChild(path);
+
+            // Анимация появления линии
+            setTimeout(() => {
+                path.style.transition = 'stroke-dashoffset 1.5s ease-out';
+                path.style.strokeDasharray = path.getTotalLength();
+                path.style.strokeDashoffset = path.getTotalLength();
+                path.style.strokeDashoffset = '0';
+            }, 100);
+        }
+
+        // Модифицируем только функцию createAxes()
+        function createAxes(containerId, maxValue, isDecimal = false, customTicks = null) {
             const yAxis = document.getElementById(`y-axis-${containerId}`);
             const xAxis = document.getElementById(`x-axis-${containerId}`);
             const barsContainer = document.getElementById(`${containerId}-histogram`);
@@ -716,56 +1101,85 @@
             // Удаляем старые линии сетки
             document.querySelectorAll(`#${containerId}-histogram .y-gridline`).forEach(el => el.remove());
 
-            // Создаем 5 горизонтальных линий сетки с подписями
-            for (let i = 0; i <= 4; i++) {
-                const value = (maxValue * i / 4).toFixed(isDecimal ? 1 : 0);
-                const positionPercent = (4 - i) * 25; // Инвертируем для правильного расположения (0 внизу)
+            // Определяем шаги для шкалы
+            let ticks;
+            if (customTicks) {
+                ticks = customTicks;
+            } else {
+                // Автоматически генерируем деления
+                if (maxValue <= 1) {
+                    ticks = [0, 0.2, 0.4, 0.6, 0.8, 1.0];
+                } else if (maxValue <= 5) {
+                    ticks = [0, 1, 2, 3, 4, 5];
+                } else {
+                    const step = Math.ceil(maxValue / 5);
+                    ticks = [];
+                    for (let i = 0; i * step <= maxValue; i++) {
+                        ticks.push(i * step);
+                    }
+                    if (ticks[ticks.length - 1] < maxValue) {
+                        ticks.push(maxValue);
+                    }
+                }
+            }
+
+            // Создаем подписи на оси Y (в обратном порядке)
+            ticks.reverse().forEach(tickValue => {
+                const value = isDecimal ? tickValue.toFixed(1) : Math.round(tickValue);
 
                 // Создаем подпись на оси Y
                 const tick = document.createElement('div');
                 tick.className = 'y-tick';
-                tick.style.bottom = `${positionPercent}%`;
                 tick.textContent = value;
                 yAxis.appendChild(tick);
+            });
+
+            // Создаем горизонтальные линии сетки (в правильном порядке)
+            ticks.reverse().forEach(tickValue => {
+                const positionPercent = 100 - (tickValue / maxValue * 100);
 
                 // Создаем горизонтальную линию сетки
                 const gridline = document.createElement('div');
                 gridline.className = 'y-gridline';
                 gridline.style.bottom = `${positionPercent}%`;
                 barsContainer.appendChild(gridline);
-            }
+            });
 
-            // Добавляем подписи на оси X
-            const barLabels = document.querySelectorAll(`#${containerId}-histogram .bar-label`);
-            barLabels.forEach((label, i) => {
-                const tick = document.createElement('div');
-                tick.className = 'x-tick';
-                tick.style.left = `${(i * 30 + 15)}%`;
-                tick.textContent = label.textContent;
-                xAxis.appendChild(tick);
+        }
+
+        // Установка высот столбцов
+        function setBarHeights(containerId, values, maxValue) {
+            const bars = document.querySelectorAll(`#${containerId} .bar`);
+            bars.forEach((bar, index) => {
+                const heightPercent = (values[index] / maxValue) * 100;
+                bar.style.height = `${heightPercent}%`;
+                bar.dataset.value = values[index];
             });
         }
 
-        // Инициализация при загрузке страницы
-        document.addEventListener('DOMContentLoaded', function () {
-            // Инициализация круговых диаграмм
-            initCharts();
+        // Инициализация гистограмм
+        function initHistograms() {
+            // Значения для гистограммы времени (в минутах)
+            const timeValues = [20, 30, 25];
+            const maxTime = 40; // Фиксированный максимум для шкалы
 
-            // Рассчитываем максимальные значения для каждой гистограммы
-            const timeValues = Array.from(document.querySelectorAll('#time-histogram .bar'))
-                .map(bar => parseFloat(bar.dataset.value));
-            const attemptsValues = Array.from(document.querySelectorAll('#attempts-histogram .bar'))
-                .map(bar => parseFloat(bar.dataset.value));
+            // Значения для гистограммы попыток
+            const attemptsValues = [1.0, 1.2, 1.0];
+            const maxAttempts = 1.5; // Фиксированный максимум для шкалы
 
-            // Создаем оси с правильной нумерацией (от 0 до максимума)
-            createAxes('time', Math.max(...timeValues));
-            createAxes('attempts', Math.max(...attemptsValues), true);
+            // Создаем оси с правильным масштабированием
+            createAxes('time', maxTime, false, [0, 10, 20, 30, 40]);
+            createAxes('attempts', maxAttempts, true, [0, 0.5, 1.0, 1.5]);
+
+            // Устанавливаем правильные высоты столбцов
+            setBarHeights('time-histogram', timeValues, maxTime);
+            setBarHeights('attempts-histogram', attemptsValues, maxAttempts);
 
             // Анимируем гистограммы если панель открыта
             if (document.getElementById('averagePanel').classList.contains('active')) {
                 animateHistograms('open');
             }
-        });
+        }
 
         // Инициализация всех диаграмм
         function initCharts() {
@@ -894,6 +1308,9 @@
                     // Сворачиваем - анимируем исчезновение
                     animateHistograms('close');
                 }
+            } else if (panelId === 'timeSeriesPanel' && isExpanded) {
+                // При открытии панели временных рядов инициализируем их
+                initTimeSeries();
             }
         }
 
@@ -918,6 +1335,93 @@
                 }, 10);
             });
         }
+        // Добавляем функцию для временных рядов
+        function createTimeSeries(chartId, stageNumber) {
+            const ctx = document.getElementById(chartId).getContext('2d');
+            const dates = [];
+            const startDate = new Date('2025-09-20');
+
+            // Генерируем даты с интервалом в 2 дня
+            for (let i = 0; i < 5; i++) {
+                const date = new Date(startDate);
+                date.setDate(date.getDate() + i * 2);
+                dates.push(date.toLocaleDateString('ru-RU'));
+            }
+
+            // Генерируем случайные данные
+            const data = [];
+            for (let i = 0; i < 5; i++) {
+                data.push(Math.floor(Math.random() * 140));
+            }
+
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [{
+                        label: `Этап ${stageNumber}`,
+                        data: data,
+                        borderColor: chartColors[stageNumber - 1],
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 5,
+                        pointBackgroundColor: chartColors[stageNumber - 1]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 140,
+                            ticks: {
+                                stepSize: 20,
+                                color: '#666'
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#666'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255,255,255,0.9)',
+                            titleColor: '#2c3e50',
+                            bodyColor: '#666',
+                            borderColor: '#eee',
+                            borderWidth: 1,
+                            padding: 12,
+                            boxShadow: '0 3px 12px rgba(0,0,0,0.1)'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Обновляем инициализацию
+        document.addEventListener('DOMContentLoaded', function () {
+            // Существующая инициализация
+            initCharts();
+            initHistograms();
+
+            // Инициализация временных рядов
+            createTimeSeries('stage1Chart', 1);
+            createTimeSeries('stage2Chart', 2);
+            createTimeSeries('stage3Chart', 3);
+        });
     </script>
 </body>
 </html>
